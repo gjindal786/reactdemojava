@@ -34,3 +34,6 @@ build/
 
 ### Front End React Code ###
 /src/frontend
+
+### Maven ###
+.mvn
