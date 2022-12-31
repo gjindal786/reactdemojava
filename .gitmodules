@@ -1,0 +1,3 @@
+[submodule "src/frontend"]
+	path = src/frontend
+	url = /Users/apple/Data Disk/GitHub/reactdemojava/src/frontend
