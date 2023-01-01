@@ -240,7 +240,7 @@ function App() {
                     src="https://user-images.githubusercontent.com/24814824/210049149-4a20207b-7e65-4c56-9732-eb42c1f9a11e.png"
                 />
                 <Divider>
-                    <a target="_blank" href="http://reactdemojava-env.eba-a5npcncn.eu-west-1.elasticbeanstalk.com" >Click here to access live url</a>
+                    <a ref="noopener noreferrer" target="_blank" href="http://reactdemojava-env.eba-a5npcncn.eu-west-1.elasticbeanstalk.com" >Click here to access live url</a>
                 </Divider>
             </Footer>
         </Layout>
