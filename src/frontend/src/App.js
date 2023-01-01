@@ -4,7 +4,22 @@ import {deleteStudent, getAllStudents} from "./client";
 //useState Manage state for application so we run api call only once
 import {useState, useEffect} from "react";
 
-import {Layout, Menu, Breadcrumb, Table, Spin, Empty, Button, Tag, Badge, Avatar, Radio, Popconfirm, Image} from 'antd';
+import {
+    Layout,
+    Menu,
+    Breadcrumb,
+    Table,
+    Spin,
+    Empty,
+    Button,
+    Tag,
+    Badge,
+    Avatar,
+    Radio,
+    Popconfirm,
+    Image,
+    Divider
+} from 'antd';
 import {
     DesktopOutlined,
     PieChartOutlined,
@@ -223,7 +238,10 @@ function App() {
                 <Image
                     width={75}
                     src="https://user-images.githubusercontent.com/24814824/210049149-4a20207b-7e65-4c56-9732-eb42c1f9a11e.png"
-                >ICON</Image>
+                />
+                <Divider>
+                    <a target="_blank" href="http://reactdemojava-env.eba-a5npcncn.eu-west-1.elasticbeanstalk.com" >Click here to access live url</a>
+                </Divider>
             </Footer>
         </Layout>
     </Layout>
