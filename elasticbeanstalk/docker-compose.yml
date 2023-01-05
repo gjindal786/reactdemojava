@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   backend:
-    image: "gjindal786/reactdemojava:5.1.2023.14.15.53"
+    image: "gjindal786/reactdemojava:5.1.2023.14.56.42"
     ports:
       - "80:8080"
     restart: "always"
