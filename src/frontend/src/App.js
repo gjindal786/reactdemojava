@@ -240,7 +240,7 @@ function App() {
                     src="https://user-images.githubusercontent.com/24814824/210049149-4a20207b-7e65-4c56-9732-eb42c1f9a11e.png"
                 />
                 <Divider>
-                    <a rel="noopener noreferrer" target="_blank" href="https://app.viewandshare.com/" >Click here to access live url</a>
+                    <a rel="noopener noreferrer" target="_blank" href="https://app.viewandshare.com/" >Click here to get live url</a>
                 </Divider>
             </Footer>
         </Layout>
