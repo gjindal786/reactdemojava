@@ -14,6 +14,8 @@ env:
   POSTGRESQL_PASSWORD: password
   # Java
   JAVA_VERSION: 1.15
+  # DockerHub
+  #DOCKER_HUB_USERNAME: gjindal786
   # AWS & Elastic Bean Stalk
   AWS_REGION: eu-west-1
   EB_ENVIRONMENT_NAME: Reactdemojava-env
@@ -64,18 +66,64 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@aaf69d68aa3fb14c1d5a6be9ac61fe15b48453a2
 
-      - name: Build, tag, and push the image to Amazon ECR
-        id: build-image
+      - name: Maven Clean Package and Push to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
+          #IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          # echo "Pushing image to ECR..."
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          # echo "name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          ./mvnw --no-transfer-progress clean package \
+            -P build-frontend \
+            -P jib-push-to-ecr \
+              -Dapp.image.url=$ECR_REGISTRY \
+              -Dapp.image.repository=$ECR_REPOSITORY \
+              -Dapp.image.tag=${{steps.build-number.outputs.BUILD_NUMBER}}
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          text: ':white_check_mark: pushed 183184149859.dkr.ecr.eu-west-1.amazonaws.com/reactdemojava:${{steps.build-number.outputs.BUILD_NUMBER}} to docker hub... https://183184149859.dkr.ecr.eu-west-1.amazonaws.com/reactdemojava'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Update and commit app version in docker-compose.yaml
+        run: |
+          BUILD_NUMBER=${{steps.build-number.outputs.BUILD_NUMBER}}
+          echo -e "Current elasticbeanstalk/docker-compose.yml\n$(cat elasticbeanstalk/docker-compose.yml)"
+          sed -i -E 's_(183184149859.dkr.ecr.eu-west-1.amazonaws.com/reactdemojava:)([^"]*)_\1'${BUILD_NUMBER}'_' elasticbeanstalk/docker-compose.yml
+          echo -e "Current elasticbeanstalk/docker-compose.yml\n$(cat elasticbeanstalk/docker-compose.yml)"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add elasticbeanstalk/docker-compose.yml
+          git commit -m "new app version: ${BUILD_NUMBER}"
+          git push
+
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          text: ':elasticbeanstalk: :aws: Deployment started... :grimacing: :crossed_fingers:'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@ebe3476a4ce991d54336935e75e78dd9d86f9408
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ${{ env.AWS_REGION }}
+          environment_name: ${{ env.EB_ENVIRONMENT_NAME }}
+          application_name: ${{ env.EB_APPLICATION_NAME }}
+          deployment_package: ${{ env.EB_DEPLOYMENT_PACKAGE }}
+          version_label: ${{ steps.build-number.outputs.BUILD_NUMBER }}
+          version_description: Version ${{steps.build-number.outputs.BUILD_NUMBER}} deployed via github actions ${{ github.sha }}
+          wait_for_deployment: 60
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          text: ':tada: :arrow_right: http://reactdemojava-env.eba-a5npcncn.eu-west-1.elasticbeanstalk.com'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Logout to Amazon ECR
         if: always()
