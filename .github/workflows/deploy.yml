@@ -92,7 +92,7 @@ jobs:
           ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY }}
           echo -e "Current elasticbeanstalk/docker-compose.yml\n$(cat elasticbeanstalk/docker-compose.yml)"
-          sed -i -E 's_(183184149859.dkr.ecr.eu-west-1.amazonaws.com/reactdemojava:)([^"]*)_\1'${BUILD_NUMBER}'_' elasticbeanstalk/docker-compose.yml
+          sed -i -E 's_(public.ecr.aws/s7t8x3a2/reactdemojava:)([^"]*)_\1'${BUILD_NUMBER}'_' elasticbeanstalk/docker-compose.yml
           echo -e "Current elasticbeanstalk/docker-compose.yml\n$(cat elasticbeanstalk/docker-compose.yml)"
           git config user.name github-actions
           git config user.email github-actions@github.com
@@ -107,6 +107,7 @@ jobs:
           text: ':elasticbeanstalk: :aws: Deployment started... :grimacing: :crossed_fingers:'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@ebe3476a4ce991d54336935e75e78dd9d86f9408
         with:
