@@ -89,8 +89,10 @@ jobs:
       - name: Update and commit app version in docker-compose.yaml
         run: |
           BUILD_NUMBER=${{steps.build-number.outputs.BUILD_NUMBER}}
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY }}
           echo -e "Current elasticbeanstalk/docker-compose.yml\n$(cat elasticbeanstalk/docker-compose.yml)"
-          sed -i -E 's_(183184149859.dkr.ecr.eu-west-1.amazonaws.com/reactdemojava:)([^"]*)_\1'${BUILD_NUMBER}'_' elasticbeanstalk/docker-compose.yml
+          sed -i 's/183184149859.dkr.ecr.eu-west-1.amazonaws.com/'$ECR_REGISTRY'/g' elasticbeanstalk/docker-compose.yml
           echo -e "Current elasticbeanstalk/docker-compose.yml\n$(cat elasticbeanstalk/docker-compose.yml)"
           git config user.name github-actions
           git config user.email github-actions@github.com
