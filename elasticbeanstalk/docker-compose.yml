@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   backend:
-    image: "183184149859.dkr.ecr.eu-west-1.amazonaws.com/reactdemojava:4.2.2023.16.53.34"
+    image: "183184149859.dkr.ecr.eu-west-1.amazonaws.com/reactdemojava:4.2.2023.17.4.35"
     ports:
       - "80:8080"
     restart: "always"
